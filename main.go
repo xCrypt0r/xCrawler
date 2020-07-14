@@ -5,14 +5,19 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
+type user struct {
+	nickname string
+	server string
+	level string
+}
+
 var URL string = "https://maple.gg/rank/dojang?page="
-var users = make([]string, 0)
-var c = make(chan []string)
+var users = make([]user, 0)
+var c = make(chan []user)
 
 func main() {
 	getPages()
@@ -29,13 +34,13 @@ func getPages() int {
 		users = append(users, <-c...)
 	}
 
-	fmt.Println(strings.Join(users, "\n"))
+	fmt.Println(users)
 
 	return 0
 }
 
-func getUsers(p int, c chan []string) {
-	_users := make([]string, 0)
+func getUsers(p int, c chan []user) {
+	_users := make([]user, 0)
 
 	res, err := http.Get(URL + strconv.Itoa(p))
 
@@ -47,9 +52,17 @@ func getUsers(p int, c chan []string) {
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 
 	checkErr(err)
-
-	doc.Find("span .text-grape-fruit").Each(func(i int, s *goquery.Selection) {
-		_users = append(_users, s.Text())
+	
+	doc.Find("td.align-middle").Not(".d-none").Each(func(i int, s *goquery.Selection) {
+		nickname := s.Find(".text-grape-fruit").Text()
+		server, _ := s.Find("div.d-inline-block img").Eq(1).Attr("alt")
+		level := s.Find(".font-size-14").Eq(0).Text()
+		
+		_users = append(_users, user{
+			nickname: nickname,
+			server: server,
+			level: level,
+		})
 	})
 
 	c <- _users
