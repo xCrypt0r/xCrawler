@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 type user struct {
+	rank     int
 	nickname string
-	server string
-	level string
+	server   string
+	level    string
 }
 
 var URL string = "https://maple.gg/rank/dojang?page="
@@ -34,7 +36,13 @@ func getPages() int {
 		users = append(users, <-c...)
 	}
 
-	fmt.Println(users)
+	sort.SliceStable(users, func(x, y int) bool {
+		return users[x].rank < users[y].rank
+	})
+
+	for _, user := range users {
+		fmt.Printf("[%s] %s %s\n", user.server, user.nickname, user.level)
+	}
 
 	return 0
 }
@@ -52,16 +60,17 @@ func getUsers(p int, c chan []user) {
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 
 	checkErr(err)
-	
+
 	doc.Find("td.align-middle").Not(".d-none").Each(func(i int, s *goquery.Selection) {
 		nickname := s.Find(".text-grape-fruit").Text()
 		server, _ := s.Find("div.d-inline-block img").Eq(1).Attr("alt")
 		level := s.Find(".font-size-14").Eq(0).Text()
-		
+
 		_users = append(_users, user{
+			rank:     (p-1)*20 + i + 1,
 			nickname: nickname,
-			server: server,
-			level: level,
+			server:   server,
+			level:    level,
 		})
 	})
 
