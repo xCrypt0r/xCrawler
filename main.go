@@ -11,29 +11,21 @@ import (
 )
 
 var URL string = "https://maple.gg/rank/dojang?page="
+var users = make([]string, 0)
+var c = make(chan []string)
 
 func main() {
 	getPages()
 }
 
 func getPages() int {
-	users := make([]string, 0)
-	c := make(chan []string)
+	maxPage := 5
 
-	for p := 1; p <= 5; p++ {
-		res, err := http.Get(URL + strconv.Itoa(p))
+	for p := 1; p <= maxPage; p++ {
+		go getUsers(p, c)
+	}
 
-		checkErr(err)
-		checkCode(res)
-
-		defer res.Body.Close()
-
-		doc, err := goquery.NewDocumentFromReader(res.Body)
-
-		checkErr(err)
-
-		go getUsers(doc, c)
-
+	for i := 0; i < maxPage; i++ {
 		users = append(users, <-c...)
 	}
 
@@ -42,8 +34,19 @@ func getPages() int {
 	return 0
 }
 
-func getUsers(doc *goquery.Document, c chan []string) {
+func getUsers(p int, c chan []string) {
 	_users := make([]string, 0)
+
+	res, err := http.Get(URL + strconv.Itoa(p))
+
+	checkErr(err)
+	checkCode(res)
+
+	defer res.Body.Close()
+
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+
+	checkErr(err)
 
 	doc.Find("span .text-grape-fruit").Each(func(i int, s *goquery.Selection) {
 		_users = append(_users, s.Text())
