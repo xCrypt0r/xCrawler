@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"sync"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -18,23 +19,23 @@ type user struct {
 }
 
 var URL string = "https://maple.gg/rank/dojang?page="
-var users = make([]user, 0)
-var c = make(chan []user)
 
 func main() {
 	getPages()
 }
 
 func getPages() int {
+	users := make([]user, 0)
 	maxPage := 5
+	wg := sync.WaitGroup{}
+
+	wg.Add(maxPage)
 
 	for p := 1; p <= maxPage; p++ {
-		go getUsers(p, c)
+		go getUsers(p, &users, &wg)
 	}
 
-	for i := 0; i < maxPage; i++ {
-		users = append(users, <-c...)
-	}
+	wg.Wait()
 
 	sort.SliceStable(users, func(x, y int) bool {
 		return users[x].rank < users[y].rank
@@ -47,8 +48,8 @@ func getPages() int {
 	return 0
 }
 
-func getUsers(p int, c chan []user) {
-	_users := make([]user, 0)
+func getUsers(p int, users *[]user, wg *sync.WaitGroup) {
+	defer wg.Done()
 
 	res, err := http.Get(URL + strconv.Itoa(p))
 
@@ -66,15 +67,13 @@ func getUsers(p int, c chan []user) {
 		server, _ := s.Find("div.d-inline-block img").Eq(1).Attr("alt")
 		level := s.Find(".font-size-14").Eq(0).Text()
 
-		_users = append(_users, user{
+		*users = append(*users, user{
 			rank:     (p-1)*20 + i + 1,
 			nickname: nickname,
 			server:   server,
 			level:    level,
 		})
 	})
-
-	c <- _users
 }
 
 func checkErr(err error) {
