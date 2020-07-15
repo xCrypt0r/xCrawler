@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 	"sort"
 	"strconv"
 	"sync"
 
 	"github.com/PuerkitoBio/goquery"
+)
+
+var (
+	URL string = "https://maple.gg/rank/dojang?page="
 )
 
 type user struct {
@@ -18,9 +23,9 @@ type user struct {
 	level    string
 }
 
-var URL string = "https://maple.gg/rank/dojang?page="
-
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	getPages()
 }
 
