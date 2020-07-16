@@ -1,0 +1,20 @@
+{
+  "name": "maplestory-scrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "maplestory",
+    "maple",
+    "scrapper"
+  ],
+  "author": "SoBusted",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "request": "^2.88.2"
+  }
+}
