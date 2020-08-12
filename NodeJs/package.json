@@ -11,7 +11,7 @@
     "maple",
     "scrapper"
   ],
-  "author": "SoBusted",
+  "author": "xCrypt0r",
   "license": "MIT",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
