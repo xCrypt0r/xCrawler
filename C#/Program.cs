@@ -9,10 +9,10 @@ using System.Linq;
 
 namespace MaplestoryScrapper {
     struct User {
-        public int rank;
-        public string nickname;
-        public string server;
-        public string level;
+        public int Rank;
+        public string Nickname;
+        public string Server;
+        public string Level;
     }
 
     class Program {
@@ -41,11 +41,11 @@ namespace MaplestoryScrapper {
             }
 
             users = (from user in users
-                    orderby user.rank
+                    orderby user.Rank
                     select user).ToList();
 
             foreach (User user in users) {
-                Console.WriteLine("[{0}] {1} {2}", user.nickname, user.server, user.level);
+                Console.WriteLine("[{0}] {1} {2}", user.Nickname, user.Server, user.Level);
             }
         }
 
@@ -57,10 +57,10 @@ namespace MaplestoryScrapper {
 
             foreach (Match m in match) {
                 User user = new User() {
-                    rank = (page - 1) * 20 + (i++ + 1),
-                    nickname = m.Groups[1].Value,
-                    server = m.Groups[2].Value,
-                    level = m.Groups[3].Value
+                    Rank = (page - 1) * 20 + (i++ + 1),
+                    Nickname = m.Groups[1].Value,
+                    Server = m.Groups[2].Value,
+                    Level = m.Groups[3].Value
                 };
 
                 users.Add(user);
