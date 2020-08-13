@@ -28,7 +28,7 @@ def get_pages():
 
 
 	for user in sorted(Users, key=attrgetter('rank')):
-		print user.rank, '. [', user.server, '] ', user.nickname, ' ', user.level
+		print [', user.server, '] ', user.nickname, ' ', user.level
 
 def get_users(page):
 	rgx = '/world/ico_world_.+"(.+)">.+>(.+)</a></span>[^@]+?font-size-14">(.+)<'
