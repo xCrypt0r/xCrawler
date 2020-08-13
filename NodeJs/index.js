@@ -23,7 +23,7 @@ function getPages() {
                     return x.rank < y.rank;
                 })
                 .forEach(user => {
-                    console.log('[%s] %s %s\n', user.server, user.nickname, user.level);
+                    console.log('[%s] %s %s', user.server, user.nickname, user.level);
                 });
         });
 }
