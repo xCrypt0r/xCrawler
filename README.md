@@ -9,8 +9,8 @@ dotnet run
 ```
 or
 ```
-mcs -out:Program Program.cs
-./Program
+dotnet build -o Release -r ubuntu.18.04-x64 -c Release
+./Release/Program
 ```
 ---
 ### C++
