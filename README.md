@@ -28,3 +28,8 @@ go run main.go
 ```
 npm start
 ```
+---
+### Python
+```
+python app.py
+```
