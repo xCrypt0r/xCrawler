@@ -19,9 +19,7 @@ function getPages() {
     Promise.all(promises)
         .then(() => {
             users
-                .sort((x, y) => {
-                    return x.rank < y.rank;
-                })
+                .sort((x, y) => x.rank - y.rank)
                 .forEach(user => {
                     console.log('[%s] %s %s', user.server, user.nickname, user.level);
                 });
