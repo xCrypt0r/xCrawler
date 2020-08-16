@@ -20,9 +20,7 @@ function getPages() {
         .then(() => {
             users
                 .sort((x, y) => x.rank - y.rank)
-                .forEach(user => {
-                    console.log('[%s] %s %s', user.server, user.nickname, user.level);
-                });
+                .forEach(user => console.log(`[${user.server}] ${user.nickname} ${user.level}`));
         });
 }
 
@@ -31,16 +29,13 @@ async function getUsers(page, users) {
         $ = cheerio.load(body);
 
     $('td.align-middle').not('.d-none').each((i, el) => {
-        let it = $(el),
-            nickname = it.find('.text-grape-fruit').text(),
-            server = it.find('div.d-inline-block img').eq(1).attr('alt'),
-            level = it.find('.font-size-14').eq(0).text();
+        let it = $(el);
 
         users.push({
             rank: (page - 1) * 20 + i + 1,
-            nickname,
-            server,
-            level
+            nickname: it.find('.text-grape-fruit').text(),
+            server: it.find('div.d-inline-block img').eq(1).attr('alt'),
+            level: it.find('.font-size-14').eq(0).text()
         });
     });
 }
