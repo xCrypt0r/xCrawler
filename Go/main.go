@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -26,7 +27,13 @@ type user struct {
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	start := time.Now()
+
 	getPages()
+
+	elapsed := float32(time.Since(start).Milliseconds()) * 1e-3
+
+	fmt.Printf("%.3f sec", elapsed)
 }
 
 func getPages() int {
