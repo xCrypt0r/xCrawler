@@ -2,6 +2,7 @@
 
 import requests
 import re
+from time import time
 from collections import namedtuple
 from operator import attrgetter
 from threading import Thread
@@ -11,7 +12,13 @@ User = namedtuple('User', 'rank nickname server level')
 Users = []
 
 def main():
+	start = time()
+
 	get_pages()
+
+	elapsed = time() - start
+
+	print('%.3f sec' % elapsed)
 
 def get_pages():
 	threads = []
@@ -19,7 +26,7 @@ def get_pages():
 
 	for page in range(1, max_page + 1):
 		th = Thread(target=get_users, args=(page,))
-		
+
 		th.start()
 		threads.append(th)
 
@@ -33,7 +40,7 @@ def get_users(page):
 	rgx = '/world/ico_world_.+"(.+)">.+>(.+)</a></span>[^@]+?font-size-14">(.+)<'
 	r = requests.get(URL + str(page))
 	i = 0
-	
+
 	for (servers, nicknames, levels) in re.findall(rgx, r.text):
 		user = User(
 			rank=(page - 1) * 20 + (i + 1),
@@ -44,6 +51,6 @@ def get_users(page):
 
 		i += 1
 		Users.append(user)
-		
+
 if __name__ == "__main__":
 	main()
