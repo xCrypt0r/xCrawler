@@ -34,7 +34,7 @@ def get_pages():
 		th.join()
 
 	for user in sorted(Users, key=attrgetter('rank')):
-		print '[', user.server, '] ', user.nickname, ' ', user.level
+		print('[%s] %s %s' % (user.server, user.nickname, user.level))
 
 def get_users(page):
 	rgx = '/world/ico_world_.+"(.+)">.+>(.+)</a></span>[^@]+?font-size-14">(.+)<'
