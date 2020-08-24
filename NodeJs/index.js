@@ -4,7 +4,14 @@ const cheerio = require('cheerio');
 const URL = 'https://maple.gg/rank/dojang?page=';
 
 function main() {
-    getPages();
+    let start = new Date().getTime();
+
+    getPages()
+        .then(() => {
+            let elapsed = new Date().getTime() - start;
+
+            console.log(`${elapsed * 1e-3} sec`);
+        });
 }
 
 function getPages() {
@@ -16,7 +23,7 @@ function getPages() {
         promises.push(getUsers(page, users));
     }
 
-    Promise.all(promises)
+    return Promise.all(promises)
         .then(() => {
             users
                 .sort((x, y) => x.rank - y.rank)
