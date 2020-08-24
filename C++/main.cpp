@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <regex>
+#include <chrono>
 #include <vector>
 #include <thread>
 #include <algorithm>
@@ -25,9 +26,14 @@ size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
 int main()
 {
+    auto t1 = chrono::high_resolution_clock::now();
+
     getPages();
 
-    return 0;
+    auto t2 = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<std::chrono::milliseconds>(t2 -t1).count();
+
+    cout << duration * 1e-3 << " sec" << endl;
 }
 
 int getPages()
