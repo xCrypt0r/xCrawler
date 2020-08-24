@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -19,7 +20,12 @@ namespace MaplestoryScrapper {
         public static readonly string URL = @"https://maple.gg/rank/dojang?page=";
 
         public static void Main(string[] args) {
+            Stopwatch stopwatch = new Stopwatch();
+
+            stopwatch.Start();
             GetPages();
+            stopwatch.Stop();
+            Console.WriteLine($"{stopwatch.ElapsedMilliseconds * 1e-3} sec");
         }
 
         public static void GetPages() {
