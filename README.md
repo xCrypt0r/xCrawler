@@ -29,6 +29,12 @@ go build main.go
 ./main
 ```
 ---
+### Java
+```
+javac loadRank.java
+java loadRank
+```
+---
 ### NodeJs
 ```
 npm start
