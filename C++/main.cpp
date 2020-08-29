@@ -21,19 +21,21 @@ struct User
 
 int getPages();
 int getUsers(int page, vector<User>& users);
-bool sortByRank(const User& x, const User& y);
 size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
 int main()
 {
-    auto t1 = chrono::high_resolution_clock::now();
+    ios_base::sync_with_stdio(false);
+    cout.tie(NULL);
+
+    auto start = chrono::high_resolution_clock::now();
 
     getPages();
 
-    auto t2 = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<std::chrono::milliseconds>(t2 -t1).count();
+    auto end = chrono::high_resolution_clock::now();
+    auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
-    cout << duration * 1e-3 << " sec" << endl;
+    cout << elapsed * 1e-3 << " sec" << endl;
 }
 
 int getPages()
@@ -47,12 +49,14 @@ int getPages()
         threads.emplace_back(thread(getUsers, page, ref(users)));
     }
 
-    for (auto& th : threads)
+    for (auto& th: threads)
     {
         th.join();
     }
 
-    sort(users.begin(), users.end(), sortByRank);
+    stable_sort(users.begin(), users.end(), [](const User& x, const User& y) -> bool {
+        return x.rank < y.rank;
+    });
 
     for (const auto& user : users)
     {
@@ -77,6 +81,7 @@ int getUsers(int page, vector<User>& users)
     }
 
     url << ::URL << page;
+
     curl_easy_setopt(curl, CURLOPT_URL, url.str().c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -96,20 +101,14 @@ int getUsers(int page, vector<User>& users)
     {
         User user = { (page - 1) * 20 + (i++ + 1), match.str(2), match.str(1), match.str(3) };
 
-        users.push_back(user);
+        users.emplace_back(user);
 
         readBuffer = match.suffix();
     }
 
     curl_easy_cleanup(curl);
-    curl_global_cleanup();
 
     return 0;
-}
-
-bool sortByRank(const User& x, const User& y)
-{
-    return x.rank < y.rank;
 }
 
 size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
