@@ -1,12 +1,9 @@
 using System;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using System.Linq;
 
 namespace MaplestoryScrapper {
     struct User {
@@ -42,13 +39,11 @@ namespace MaplestoryScrapper {
                 threads.Add(thread);
             }
 
-            foreach (Thread th in threads) {
-                th.Join();
+            foreach (Thread thread in threads) {
+                thread.Join();
             }
 
-            users = (from user in users
-                    orderby user.Rank
-                    select user).ToList();
+            users.Sort((x, y) => x.Rank.CompareTo(y.Rank));
 
             foreach (User user in users) {
                 Console.WriteLine("[{0}] {1} {2}", user.Nickname, user.Server, user.Level);
@@ -58,15 +53,15 @@ namespace MaplestoryScrapper {
         public static void GetUsers(int page, ref List<User> users) {
             string html = GetHtml(Program.URL + page);
             Regex rgx = new Regex("/world/ico_world_.+\"(.+)\">.+>(.+)</a></span>[^@]+?font-size-14\">(.+)<", RegexOptions.IgnoreCase);
-            MatchCollection match = rgx.Matches(html);
+            MatchCollection matches = rgx.Matches(html);
             int i = 0;
 
-            foreach (Match m in match) {
+            foreach (Match match in matches) {
                 User user = new User() {
                     Rank = (page - 1) * 20 + (i++ + 1),
-                    Nickname = m.Groups[1].Value,
-                    Server = m.Groups[2].Value,
-                    Level = m.Groups[3].Value
+                    Nickname = match.Groups[1].Value,
+                    Server = match.Groups[2].Value,
+                    Level = match.Groups[3].Value
                 };
 
                 users.Add(user);
